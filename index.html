@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>新年抽抽樂  🎉</title>
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(45deg, #ff9a9e, #fad0c4, #a18cd1, #fbc2eb);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position:0% 50%; }
+    50% { background-position:100% 50%; }
+    100% { background-position:0% 50%; }
+}
+
+h1 { color: #fff; text-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(10, 60px);
+    grid-gap: 5px;
+    margin-top: 20px;
+}
+
+.cell {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: contain; /* 保持圖片比例完整 */
+}
+
+.cell:hover {
+    transform: scale(1.1);
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+/* 自製彈窗 */
+#popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    display: none;
+    z-index: 1000;
+    text-align: center;
+}
+
+#popup img {
+    width: 120px;
+    height: 120px; /* 固定大小，保持比例 */
+    object-fit: contain; /* 保持比例完整 */
+    margin-top: 10px;
+}
+
+#popup button {
+    margin-top: 15px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 6px;
+    border: none;
+    background-color: #ff8c00;
+    color: white;
+}
+</style>
+</head>
+<body>
+<h1>新年抽抽樂 100格 🎉</h1>
+<div id="grid"></div>
+
+<!-- 自製彈窗 -->
+<div id="popup">
+    <div>抽到的獎品！</div>
+    <img id="popupImg" src="" alt="抽到圖片">
+    <br>
+    <button onclick="closePopup()">確定</button>
+</div>
+
+<script>
+const prize10 = []; // 100m.png
+const prize50 = [7,9,10,21,23,24,27,28,48,51,52,53,55,57,59,60,66,68,89,91,92,93,94,95]; // 300m.png
+const prize100 = [1,30,76,97,98]; // 500m.png
+
+const grid = document.getElementById("grid");
+const drawn = new Set(); // 抽過的格子
+
+for(let i=1;i<=100;i++){
+    const cell = document.createElement("div");
+    cell.className = "cell";
+    cell.dataset.number = i;
+    cell.style.backgroundImage = `url('${i}.png')`; // 初始格子圖
+
+    cell.addEventListener("click",function(){
+        const num = parseInt(this.dataset.number);
+        if(drawn.has(num)) return; // 抽過不能再抽
+        drawn.add(num);
+
+        let result = "No.png";
+        if(prize10.includes(num)) result = "10m.png";
+        else if(prize50.includes(num)) result = "50m.png";
+        else if(prize100.includes(num)) result = "100m.png";
+
+        // 顯示自製彈窗
+        showPopup(result);
+
+        // 抽完格子改成 YES.png
+        this.style.backgroundImage = "url('YES.png')";
+        this.classList.add("disabled");
+    });
+
+    grid.appendChild(cell);
+}
+
+// 彈窗功能
+function showPopup(imgSrc){
+    const popup = document.getElementById("popup");
+    const popupImg = document.getElementById("popupImg");
+    popupImg.src = imgSrc;
+    popup.style.display = "block";
+}
+
+function closePopup(){
+    document.getElementById("popup").style.display = "none";
+}
+</script>
+</body>
+</html>
